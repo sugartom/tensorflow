@@ -234,7 +234,52 @@ class MatMulOp : public OpKernel {
       return;
     }
 
+    // Original version of LaunchMatMul::launch()
     LaunchMatMul<Device, T, USE_CUBLAS>::launch(ctx, this, a, b, dim_pair, out);
+  
+  //   // New version of Launch MatMul::launch()
+  //   // Divide matrix m_a into several small slice matrix in row-wise,
+  //   // compute slice matrix computation seperately, and then combine together.
+  //   // If m_a has shape [M, K], m_b have shape [K, N], the output m_c has shape [M, N],
+  //   // new version will compute m_a' with shape [M/row_slice_num, K] with m_b[K, N],
+  //   // in order to get m_c' with shape [M/row_slice_num, N].
+  //   // Since Tensor.Slice() share buffer/memory, there is no need to manually
+  //   // copy the value of m_c' back to m_c.
+
+  //   // Variable row_slice_num defines how many slices user wants.
+  //   // The current version use a hard-coded value: 2.
+  //   // [***] In future version, will do that in run-time according to user requirement.
+  //   const int row_slice_num = 4;
+
+  //   // Variable row_slice_length defines the length of slice in row-wise.
+  //   int row_slice_length = a.dim_size(a_dim_remaining) / row_slice_num;
+
+  //   LOG(INFO) << "[yitao] row_slice_num = " << row_slice_num;
+  //   LOG(INFO) << "[yitao] row_slice_length = " << row_slice_length;
+
+  //   // The slice matrix's row shape is slices with column shape unchanged.
+  //   TensorShape slice_shape({row_slice_length, b.dim_size(b_dim_remaining)});
+
+  //   // Call LaunchMatMul::launch() for each slice to do matrix multiplication.
+  //   // Note that m_a is sliced in row-wise while m_b is unchanged
+  //   // [***] In future version, will slice m_a in row-wise and m_b in column-wise
+  //   for (int i = 0; i < row_slice_num; i++) {
+  //     Tensor slice_tensor = out->Slice(i * row_slice_length, (i + 1) * row_slice_length);
+  //     LaunchMatMul<Device, T, USE_CUBLAS>::launch(
+  //         ctx, this,
+  //         a.Slice(i * row_slice_length, (i + 1) * row_slice_length), b,
+  //         dim_pair, &slice_tensor);
+  //   }
+  // 	// If a.dim_size(a_dim_remaining) is not divided exactly by row_slice_num.
+  // 	// ex. a.dim_size() = 7, row_slice_num = 2, then there will be some part of
+  // 	// the matrix remaining un-calculated. Need to deal with the remaining part.
+  // 	if (row_slice_length * row_slice_num < a.dim_size(a_dim_remaining)) {
+  // 		Tensor slice_tensor = out->Slice(row_slice_length * row_slice_num, a.dim_size(a_dim_remaining));
+  // 		LaunchMatMul<Device, T, USE_CUBLAS>::launch(
+  // 				ctx, this,
+  // 				a.Slice(row_slice_length * row_slice_num, a.dim_size(a_dim_remaining)), b,
+  // 				dim_pair, &slice_tensor);
+  // 	}
   }
 
  private:
