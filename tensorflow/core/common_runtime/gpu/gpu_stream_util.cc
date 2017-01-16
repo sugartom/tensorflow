@@ -61,6 +61,15 @@ Status AssignStreams(const Graph* graph, const AssignStreamsOpts& opts,
       }
     }
   }
+
+ for (Node* n : order) {
+    const int node_id = n->id();
+    LOG(INFO) << "[Yitao] Node " << node_id << " " << n->type_string() << " " << n->name() << " " << n->in_edges().size() << " inputs";
+    for (const Edge* e : n->in_edges()) {
+      LOG(INFO) << "[Yitao] Edge from " << e->src()->id() << "  " << e->src()->name() << " fanout " << e->src()->out_edges().size();
+    }
+  } 
+
   // We perform stream assignment assuming a large number of
   // stream IDs and then map these down to the required number of streams
   // using simple round-robin.
@@ -104,6 +113,46 @@ Status AssignStreams(const Graph* graph, const AssignStreamsOpts& opts,
   }
   VLOG(1) << "Identified " << highest_stream_id << " candidate streams for "
           << order.size() << " nodes.";
+
+  bool manualAssign = true;
+  if (manualAssign) {
+    if (order.size() == 15) {
+      LOG(INFO) << "[Yitao] ========= order.size = 15, it is initial phase!";
+      (*node_to_stream_id)[0] = 0;
+      (*node_to_stream_id)[1] = 1;
+      (*node_to_stream_id)[2] = 1;
+      (*node_to_stream_id)[3] = 1;
+      (*node_to_stream_id)[4] = 1;
+      (*node_to_stream_id)[5] = 1;
+      (*node_to_stream_id)[6] = 1;
+      (*node_to_stream_id)[7] = 1;
+      (*node_to_stream_id)[8] = 0;
+      (*node_to_stream_id)[9] = 0;
+      (*node_to_stream_id)[10] = 0;
+      (*node_to_stream_id)[11] = 0;
+      (*node_to_stream_id)[12] = 0;
+      (*node_to_stream_id)[13] = 0;
+      (*node_to_stream_id)[14] = 1;
+    } else if (order.size() == 14) {
+      LOG(INFO) << "[Yitao] ========= order.size = 14, it is sess.run phase!";
+      (*node_to_stream_id)[0] = 0;
+      (*node_to_stream_id)[1] = 1;
+      (*node_to_stream_id)[2] = 1;
+      (*node_to_stream_id)[3] = 1;
+      (*node_to_stream_id)[4] = 1;
+      (*node_to_stream_id)[5] = 1;
+      (*node_to_stream_id)[6] = 1;
+      (*node_to_stream_id)[7] = 1;
+      (*node_to_stream_id)[8] = 0;
+      (*node_to_stream_id)[9] = 0;
+      (*node_to_stream_id)[10] = 0;
+      (*node_to_stream_id)[11] = 0;
+      (*node_to_stream_id)[12] = 0;
+      (*node_to_stream_id)[13] = 0;
+    } else {
+      LOG(INFO) << "[Yitao] *** weird... ***";
+    }
+  }
 
   return Status::OK();
 }
