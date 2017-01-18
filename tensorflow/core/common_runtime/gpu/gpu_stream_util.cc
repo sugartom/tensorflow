@@ -114,7 +114,7 @@ Status AssignStreams(const Graph* graph, const AssignStreamsOpts& opts,
   VLOG(1) << "Identified " << highest_stream_id << " candidate streams for "
           << order.size() << " nodes.";
 
-  bool manualAssign = true;
+  bool manualAssign = false;
   if (manualAssign) {
     if (order.size() == 15) {
       LOG(INFO) << "[Yitao] ========= order.size = 15, it is initial phase!";

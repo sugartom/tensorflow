@@ -31,7 +31,7 @@ class GPUDevice : public BaseGPUDevice {
             Allocator* cpu_allocator)
       : BaseGPUDevice(options, name, memory_limit, locality, gpu_id,
                       physical_device_desc, gpu_allocator, cpu_allocator,
-                      false /* sync every op */, 2 /* max_streams */) {}
+                      false /* sync every op */, 1 /* max_streams */) {}
 
   Allocator* GetAllocator(AllocatorAttributes attr) override {
     if (attr.on_host()) {
