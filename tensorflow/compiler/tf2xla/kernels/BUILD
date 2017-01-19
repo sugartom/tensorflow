@@ -31,7 +31,7 @@ tf_kernel_library(
         "identity_op.cc",
         "l2loss_op.cc",
         "lrn_ops.cc",
-        "matmul_op.cc",
+        "matmul_op.cu.cc",
         "no_op.cc",
         "pack_op.cc",
         "pad_op.cc",

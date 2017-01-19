@@ -16,7 +16,7 @@ else(tensorflow_BUILD_ALL_KERNELS)
      "${tensorflow_source_dir}/tensorflow/core/kernels/fill_functor.h"
      "${tensorflow_source_dir}/tensorflow/core/kernels/fill_functor.cc"
      "${tensorflow_source_dir}/tensorflow/core/kernels/matmul_op.h"
-     "${tensorflow_source_dir}/tensorflow/core/kernels/matmul_op.cc"
+     "${tensorflow_source_dir}/tensorflow/core/kernels/matmul_op.cu.cc"
      "${tensorflow_source_dir}/tensorflow/core/kernels/no_op.h"
      "${tensorflow_source_dir}/tensorflow/core/kernels/no_op.cc"
      "${tensorflow_source_dir}/tensorflow/core/kernels/sendrecv_ops.h"
