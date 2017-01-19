@@ -29,11 +29,11 @@ limitations under the License.
 #include "tensorflow/core/platform/stream_executor.h"
 #endif  // GOOGLE_CUDA
 
-// ====================================
-#include <stdio.h>
-#include <cuda_runtime_api.h>
-#include <cuda.h>
-// ====================================
+// // ====================================
+// #include <stdio.h>
+// #include <cuda_runtime_api.h>
+// #include <cuda.h>
+// // ====================================
 
 namespace tensorflow {
 
@@ -147,12 +147,12 @@ struct LaunchMatMul<CPUDevice, T, USE_CUBLAS> : public LaunchMatMulCPU<T> {};
 
 #if GOOGLE_CUDA
 
-// ====================================
-__global__ void hello(char *a, int *b) 
-{
-  a[threadIdx.x] += b[threadIdx.x];
-}
-// ====================================
+// // ====================================
+// __global__ void hello(char *a, int *b) 
+// {
+//   a[threadIdx.x] += b[threadIdx.x];
+// }
+// // ====================================
 
 template <typename T>
 struct LaunchMatMul<GPUDevice, T, true /* USE_CUBLAS */> {
@@ -209,34 +209,34 @@ class MatMulOp : public OpKernel {
 
   void Compute(OpKernelContext* ctx) override {
 
-    // ====================================
-    const int N = 16; 
-    const int blocksize = 16;
+    // // ====================================
+    // const int N = 16; 
+    // const int blocksize = 16;
 
-    char ah[N] = "Hello \0\0\0\0\0\0";
-    int bh[N] = {15, 10, 6, 0, -11, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    // char ah[N] = "Hello \0\0\0\0\0\0";
+    // int bh[N] = {15, 10, 6, 0, -11, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
    
-    char *ad;
-    int *bd;
-    const int csize = N*sizeof(char);
-    const int isize = N*sizeof(int);
+    // char *ad;
+    // int *bd;
+    // const int csize = N*sizeof(char);
+    // const int isize = N*sizeof(int);
    
-    printf("%s", ah);
+    // printf("%s", ah);
    
-    cudaMalloc( (void**)&ad, csize ); 
-    cudaMalloc( (void**)&bd, isize ); 
-    cudaMemcpy( ad, ah, csize, cudaMemcpyHostToDevice ); 
-    cudaMemcpy( bd, bh, isize, cudaMemcpyHostToDevice ); 
+    // cudaMalloc( (void**)&ad, csize ); 
+    // cudaMalloc( (void**)&bd, isize ); 
+    // cudaMemcpy( ad, ah, csize, cudaMemcpyHostToDevice ); 
+    // cudaMemcpy( bd, bh, isize, cudaMemcpyHostToDevice ); 
     
-    dim3 dimBlock( blocksize, 1 );
-    dim3 dimGrid( 1, 1 );
-    hello<<<dimGrid, dimBlock>>>(ad, bd);
-    cudaMemcpy( ah, ad, csize, cudaMemcpyDeviceToHost ); 
-    cudaFree( ad );
-    cudaFree( bd );
+    // dim3 dimBlock( blocksize, 1 );
+    // dim3 dimGrid( 1, 1 );
+    // hello<<<dimGrid, dimBlock>>>(ad, bd);
+    // cudaMemcpy( ah, ad, csize, cudaMemcpyDeviceToHost ); 
+    // cudaFree( ad );
+    // cudaFree( bd );
     
-    printf("%s\n", ah);
-    // ====================================
+    // printf("%s\n", ah);
+    // // ====================================
 
     const Tensor& a = ctx->input(0);
     const Tensor& b = ctx->input(1);
