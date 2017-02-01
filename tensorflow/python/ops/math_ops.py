@@ -1708,6 +1708,11 @@ def trace(x, name=None):
     x = ops.convert_to_tensor(x, name="x")
     return reduce_sum(array_ops.matrix_diag_part(x), [-1], name=name)
 
+def getNumSplits(a, b): 
+  num_splits_a = min(2, a.get_shape()[0]);
+  num_splits_b = min(2, b.get_shape()[1]);
+  
+  return num_splits_a, num_splits_b
 
 def matmul(a,
            b,
@@ -1800,7 +1805,10 @@ def matmul(a,
     ValueError: If transpose_a and adjoint_a, or transpose_b and adjoint_b
       are both set to True.
   """
+    
+
   with ops.name_scope(name, "MatMul", [a, b]) as name:
+    print("Swati: Matrix multiplication python math_ops.py")
     if transpose_a and adjoint_a:
       raise ValueError("Only one of transpose_a and adjoint_a can be True.")
     if transpose_b and adjoint_b:
@@ -1810,6 +1818,8 @@ def matmul(a,
     b = ops.convert_to_tensor(b, name="b")
     a_shape = a.get_shape()
     b_shape = b.get_shape()
+    num_splits_a, num_splits_b = getNumSplits(a, b);
+
     if (not a_is_sparse and not b_is_sparse) and (
         (a_shape.ndims is None or a_shape.ndims > 2) and
         (b_shape.ndims is None or b_shape.ndims > 2)):
@@ -1851,9 +1861,25 @@ def matmul(a,
           b_is_sparse=b_is_sparse,
           name=name)
     else:
-      return gen_math_ops._mat_mul(
-          a, b, transpose_a=transpose_a, transpose_b=transpose_b, name=name)
+      print("Swati: Line 1857, math_ops.py")
+      a_parts = array_ops.split(a, num_splits_a, 0)
+      b_parts = array_ops.split(b, num_splits_b, 1)
+  
+      result = None
+      for a_part in a_parts:
+        rows = None
+        for b_part in b_parts:
+          intermediate_result = gen_math_ops._mat_mul(a_part, b_part)
+          if rows == None:
+            rows = intermediate_result
+          else:
+            rows = array_ops.concat([rows, intermediate_result], 1)
+        if result == None:
+          result = rows
+        else:
+          result = array_ops.concat([result, rows], 0)
 
+      return result
 
 sparse_matmul = gen_math_ops._sparse_mat_mul
 
